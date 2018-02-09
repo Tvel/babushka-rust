@@ -25,7 +25,7 @@ fn load_settings() -> Value
     let mut file = File::open("settings.json").unwrap();
     let mut data = String::new();
     file.read_to_string(&mut data).unwrap();
-    return serde_json::from_str(&data).unwrap();
+    serde_json::from_str(&data).unwrap()
 }
 
 fn start_discord(settings: &Value) {

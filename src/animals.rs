@@ -14,7 +14,7 @@ pub fn woof_image() -> Result<String, String> {
     let data = response.text().unwrap();
 
     let url = format!("https://random.dog/{}", data);
-    return Ok(url);
+    Ok(url)
 }
 
 pub fn meow_image() -> Result<String, String> {
@@ -28,5 +28,5 @@ pub fn meow_image() -> Result<String, String> {
     }
     let data = response.json().unwrap();
 
-    return Ok(data["file"].to_string());
+    Ok(data["file"].to_string())
 }
