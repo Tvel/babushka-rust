@@ -16,7 +16,7 @@ struct Handler;
 impl EventHandler for Handler {}
 
 fn main() {
-    let v: Value = load_settings();
+    let v = load_settings();
     start_discord(&v);
 }
 
