@@ -2,6 +2,7 @@
 name = "babushka"
 version = "0.1.2"
 authors = ["Tosil Velkov"]
+license = "MIT"
 
 [dependencies]
 serenity = "0.5"
