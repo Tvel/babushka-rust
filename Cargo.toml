@@ -1,0 +1,9 @@
+[package]
+name = "babushka"
+version = "0.1.2"
+authors = ["Tosil Velkov"]
+
+[dependencies]
+serenity = "0.5"
+requests = "0.0.30"
+serde_json = "1.0"
