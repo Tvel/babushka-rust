@@ -2,4 +2,6 @@
 /target/
 **/*.rs.bk
 settings.json
+/.idea/
+/.vscode/
 

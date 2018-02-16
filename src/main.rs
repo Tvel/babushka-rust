@@ -38,7 +38,9 @@ fn start_discord(settings: &Value) {
     client.with_framework(StandardFramework::new()
         .configure(|c| c.prefix(prefix)) 
         .cmd("dog", dog)
+        .cmd( "дог", dog)
         .cmd("cat", cat)
+        .cmd("цат", cat)
         );
 
     // start listening for events by starting a single shard
@@ -53,7 +55,7 @@ command!(dog(_context, message) {
             Err(e) => e,
         };
 
-    let _ = message.reply(&res);
+    let _ = message.reply(&format!("Let baba give you a doggo {}", &res));
 });
 
 command!(cat(_context, message) {
@@ -62,5 +64,5 @@ command!(cat(_context, message) {
             Err(e) => e,
         };
 
-    let _ = message.reply(&res);
+    let _ = message.reply(&format!("Let baba give you a kitteh {}", &res));
 });
