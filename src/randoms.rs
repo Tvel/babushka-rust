@@ -30,3 +30,17 @@ pub fn meow_image() -> Result<String, String> {
 
     Ok(data["file"].to_string())
 }
+
+pub fn coub_random() -> Result<String, String> {
+    let response = match requests::get("http://coub.com/api/v2/timeline/explore/random?page=1&per_page=1") {
+        Ok(res) => res,
+        Err(_) => return Err(String::from("Error getting a coub right now :("))
+    };
+
+    if response.status_code() != requests::StatusCode::Ok {
+        return Err(String::from("Cannot get a coub right now :("));
+    }
+    let data = response.json().unwrap();
+
+    Ok(format!("https://coub.com/embed/{}", data["coubs"][0]["permalink"].to_string()))
+}
