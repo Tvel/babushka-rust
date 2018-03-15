@@ -10,6 +10,7 @@ use std::io::Read;
 //use std::env;
 
 mod randoms;
+mod urbandict;
 
 struct Handler;
 
@@ -43,6 +44,7 @@ fn start_discord(settings: &Value) {
         .cmd("цат", cat)
         .cmd("coub", coub)
         .cmd("цоуб", coub)
+        .cmd("whatis", ub)
         );
 
     // start listening for events by starting a single shard
@@ -76,4 +78,29 @@ command!(coub(_context, message) {
         };
 
     let _ = message.reply(&format!("Let baba give you a coub {}", &res));
+});
+
+command!(ub(_context, message, args) {
+    let mut res = match urbandict::get_term_top_embed(args.full()) {
+            Ok(def) => def,
+            Err(e) => {
+                message.reply(&e);
+                return Ok(());
+            },
+        };
+
+    let _ = message.channel_id.send_message(|m| m
+        .tts(true)
+        .embed(|e| {
+            let mut e = e
+            .title(&res.title)
+            .description(&res.description);
+
+            if !res.is_example_null() {
+                e = e.field("Example", &res.example, false);
+            }
+
+            e
+            })
+        );
 });
