@@ -18,7 +18,7 @@ pub fn woof_image() -> Result<String, String> {
 }
 
 pub fn meow_image() -> Result<String, String> {
-    let response = match requests::get("https://random.cat/meow") {
+    let response = match requests::get("http://aws.random.cat/meow") {
          Ok(res) => res,
          Err(_) => return Err(String::from("Error getting a kitteh right now :("))
     };
