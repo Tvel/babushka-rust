@@ -90,7 +90,6 @@ command!(ub(_context, message, args) {
         };
 
     let _ = message.channel_id.send_message(|m| m
-        .tts(true)
         .embed(|e| {
             let mut e = e
             .title(&res.title)
