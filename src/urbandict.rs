@@ -4,12 +4,13 @@ use self::requests::ToJson;
 pub struct UrbanResult {
     pub title: String,
     pub description: String,
-    pub example: String
+    pub example: String,
+    pub url: String
 }
 
 impl UrbanResult {
-    fn new(title: String, description: String, example: String) -> UrbanResult {
-        UrbanResult { title, description, example }
+    fn new(title: String, description: String, example: String, url: String) -> UrbanResult {
+        UrbanResult { title, description, example, url }
     }
 
     pub fn is_example_null(&self) -> bool {
@@ -53,7 +54,8 @@ pub fn get_term_top_embed(term: &str) -> Result<UrbanResult, String> {
     let ur = UrbanResult::new(
         word,
         def["definition"].to_string(),
-        def["example"].to_string());
+        def["example"].to_string(),
+        def["permalink"].to_string());
 
     return Ok(ur);
 }
