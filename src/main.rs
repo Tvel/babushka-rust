@@ -45,7 +45,9 @@ fn start_discord(settings: &Value) {
         .cmd("coub", coub)
         .cmd("цоуб", coub)
         .cmd("whatis", ub)
+        .cmd("вхатис", ub)
         .cmd("whatisplain", ub_plain)
+        .cmd("вхатисплаин", ub_plain)
         );
 
     // start listening for events by starting a single shard

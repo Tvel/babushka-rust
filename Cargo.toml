@@ -1,6 +1,6 @@
 [package]
 name = "babushka"
-version = "0.1.9"
+version = "0.2.0"
 authors = ["Tosil Velkov"]
 license = "MIT"
 
@@ -8,3 +8,4 @@ license = "MIT"
 serenity = "0.5"
 requests = "0.0.30"
 serde_json = "1.0"
+url = "1.6.0"

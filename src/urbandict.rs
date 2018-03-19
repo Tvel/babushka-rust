@@ -1,5 +1,7 @@
 extern crate requests;
+extern crate url;
 use self::requests::ToJson;
+use self::url::form_urlencoded;
 
 pub struct UrbanResult {
     pub title: String,
@@ -20,7 +22,9 @@ impl UrbanResult {
 
 #[allow(dead_code)]
 pub fn get_term_top_definition(term: &str) -> Result<String, String> {
-    let response = match requests::get(format!("http://api.urbandictionary.com/v0/define?term={}", term)) {
+    let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
+        .append_pair("term", term).finish();
+    let response = match requests::get(url) {
         Ok(res) => res,
         Err(_) => return Err(String::from("Error getting a definition right now :("))
     };
@@ -34,7 +38,9 @@ pub fn get_term_top_definition(term: &str) -> Result<String, String> {
 }
 
 pub fn get_term_top_embed(term: &str) -> Result<UrbanResult, String> {
-    let response = match requests::get(format!("http://api.urbandictionary.com/v0/define?term={}", term)) {
+    let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
+        .append_pair("term", term).finish();
+    let response = match requests::get(url) {
         Ok(res) => res,
         Err(_) => return Err(String::from("Error getting a definition right now :("))
     };
