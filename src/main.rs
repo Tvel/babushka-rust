@@ -144,5 +144,5 @@ command!(ub_plain(_context, message, args) {
 command!(panzer(_context, message, args) {
     let imgbuf = memelord::make_panzer(args.full());
     let files = vec![(&imgbuf[..], "my_file.jpg")];
-    let _ = message.channel_id.send_files(files, |m| m.content("a file"));
+    let _ = message.channel_id.send_files(files, |m| m.content(args.full()));
 });
