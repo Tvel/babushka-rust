@@ -1,5 +1,6 @@
 #[macro_use] extern crate serenity;
 extern crate serde_json;
+extern crate memelord;
 
 use serenity::client::Client;
 use serenity::prelude::EventHandler;
@@ -48,6 +49,7 @@ fn start_discord(settings: &Value) {
         .cmd("вхатис", ub)
         .cmd("whatisplain", ub_plain)
         .cmd("вхатисплаин", ub_plain)
+        .cmd("panzer", panzer)
         );
 
     // start listening for events by starting a single shard
@@ -137,4 +139,10 @@ command!(ub_plain(_context, message, args) {
             &urban_result.description,
             &example))
     });
+});
+
+command!(panzer(_context, message, args) {
+    let imgbuf = memelord::make_panzer(args.full());
+    let files = vec![(&imgbuf[..], "my_file.jpg")];
+    let _ = message.channel_id.send_files(files, |m| m.content("a file"));
 });
