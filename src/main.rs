@@ -50,6 +50,11 @@ fn start_discord(settings: &Value) {
         .cmd("whatisplain", ub_plain)
         .cmd("вхатисплаин", ub_plain)
         .cmd("panzer", panzer)
+        .cmd("duck", duck)
+        .cmd("patka", duck)
+        .cmd("патка", duck)
+        .cmd("дуцк", duck)
+        .cmd("дък", duck)
         );
 
     // start listening for events by starting a single shard
@@ -74,6 +79,15 @@ command!(cat(_context, message) {
         };
 
     let _ = message.reply(&format!("Let baba give you a kitteh {}", &res));
+});
+
+command!(duck(_context, message) {
+    let mut res = match randoms::duck_image() {
+            Ok(img) => img,
+            Err(e) => e,
+        };
+
+    let _ = message.reply(&format!("Let baba give you a lucky ducky {}", &res));
 });
 
 command!(coub(_context, message) {
