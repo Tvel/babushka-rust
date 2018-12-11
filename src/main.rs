@@ -170,7 +170,7 @@ command!(fortune_safe(_context, message) {
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a fortune {}", &res));
+    let _ = message.reply(&format!("Let baba give you a 4chan {}", &res));
 });
 
 command!(nsfwortune(_context, message) {
@@ -184,5 +184,5 @@ command!(nsfwortune(_context, message) {
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a nsfw {}", &res));
+    let _ = message.reply(&format!("Let baba give you a 4chan nsfw {}", &res));
 });
