@@ -12,6 +12,7 @@ use std::io::Read;
 
 mod randoms;
 mod urbandict;
+mod fortune;
 
 struct Handler;
 
@@ -55,6 +56,8 @@ fn start_discord(settings: &Value) {
         .cmd("патка", duck)
         .cmd("дуцк", duck)
         .cmd("дък", duck)
+        .cmd("fortune", fortune_safe)
+        .cmd("nsfwortune", nsfwortune)
         );
 
     // start listening for events by starting a single shard
@@ -159,4 +162,27 @@ command!(panzer(_context, message, args) {
     let imgbuf = memelord::make_panzer(args.full());
     let files = vec![(&imgbuf[..], "my_file.jpg")];
     let _ = message.channel_id.send_files(files, |m| m.content(args.full()));
+});
+
+command!(fortune_safe(_context, message) {
+    let mut res = match fortune::get_fortune() {
+            Ok(img) => img,
+            Err(e) => e,
+        };
+
+    let _ = message.reply(&format!("Let baba give you a fortune {}", &res));
+});
+
+command!(nsfwortune(_context, message) {
+    if !message.channel().unwrap().is_nsfw() {
+        let _ = message.reply("Only for NSFW channels");
+        return Ok(());
+    }
+
+    let mut res = match fortune::get_nsfw() {
+            Ok(img) => img,
+            Err(e) => e,
+        };
+
+    let _ = message.reply(&format!("Let baba give you a nsfw {}", &res));
 });
