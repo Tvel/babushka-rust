@@ -59,6 +59,7 @@ fn start_discord(settings: &Value) {
         .expect("Error creating client");
     client.with_framework(StandardFramework::new()
         .configure(|c| c.prefix(prefix))
+        .help(&MY_HELP)
         .group(&GENERAL_GROUP)
     );
 
@@ -220,4 +221,26 @@ fn nsfwortune(ctx: &mut Context, msg: &Message) -> CommandResult {
 
     let _ = msg.reply(&ctx, &format!("Let baba give you a 4chan nsfw {}", &res));
     Ok(())
+}
+
+
+#[help]
+#[individual_command_tip =
+"Hi\n\
+If you want more information about a specific command, just pass the command as argument."]
+#[command_not_found_text = "Could not find: `{}`."]
+#[max_levenshtein_distance(3)]
+#[indention_prefix = "+"]
+#[lacking_permissions = "Hide"]
+#[lacking_role = "Nothing"]
+#[wrong_channel = "Strike"]
+fn my_help(
+    context: &mut Context,
+    msg: &Message,
+    args: Args,
+    help_options: &'static HelpOptions,
+    groups: &[&'static CommandGroup],
+    owners: HashSet<UserId>
+) -> CommandResult {
+    help_commands::with_embeds(context, msg, args, help_options, groups, owners)
 }
