@@ -1,10 +1,23 @@
-#[macro_use] extern crate serenity;
 extern crate serde_json;
 extern crate memelord;
 
+use std::{collections::{HashMap, HashSet}, env, fmt::Write, sync::Arc};
+use serenity::{
+    client::bridge::gateway::{ShardId, ShardManager},
+    framework::standard::{
+        Args, CheckResult, CommandOptions, CommandResult, CommandGroup,
+        DispatchError, HelpOptions, help_commands, StandardFramework,
+        macros::{command, group, help, check},
+    },
+    model::{channel::{Channel, Message}, gateway::Ready, id::UserId},
+    utils::{content_safe, ContentSafeOptions},
+};
+
+// This imports `typemap`'s `Key` as `TypeMapKey`.
+use serenity::prelude::*;
+
 use serenity::client::Client;
 use serenity::prelude::EventHandler;
-use serenity::framework::standard::StandardFramework;
 use serde_json::{Value};
 use std::fs::File;
 use std::io::Read;
@@ -31,6 +44,12 @@ fn load_settings() -> Value
     serde_json::from_str(&data).unwrap()
 }
 
+group!({
+    name: "general",
+    options: {},
+    commands: [dog, cat, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune]
+});
+
 fn start_discord(settings: &Value) {
     let token = settings["token"].as_str().unwrap();
     let prefix = settings["prefix"].as_str().unwrap();
@@ -39,26 +58,9 @@ fn start_discord(settings: &Value) {
     let mut client = Client::new(token, Handler)
         .expect("Error creating client");
     client.with_framework(StandardFramework::new()
-        .configure(|c| c.prefix(prefix)) 
-        .cmd("dog", dog)
-        .cmd("дог", dog)
-        .cmd("cat", cat)
-        .cmd("цат", cat)
-        .cmd("coub", coub)
-        .cmd("цоуб", coub)
-        .cmd("whatis", ub)
-        .cmd("вхатис", ub)
-        .cmd("whatisplain", ub_plain)
-        .cmd("вхатисплаин", ub_plain)
-        .cmd("panzer", panzer)
-        .cmd("duck", duck)
-        .cmd("patka", duck)
-        .cmd("патка", duck)
-        .cmd("дуцк", duck)
-        .cmd("дък", duck)
-        .cmd("fortune", fortune_safe)
-        .cmd("nsfwortune", nsfwortune)
-        );
+        .configure(|c| c.prefix(prefix))
+        .group(&GENERAL_GROUP)
+    );
 
     // start listening for events by starting a single shard
     if let Err(why) = client.start() {
@@ -66,57 +68,71 @@ fn start_discord(settings: &Value) {
     }
 }
 
-command!(dog(_context, message) {
-    let mut res = match randoms::woof_image() {
+#[command]
+#[aliases("дог")]
+fn dog(ctx: &mut Context, msg: &Message) -> CommandResult {
+    let res = match randoms::woof_image() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a doggo {}", &res));
-});
+    let _ = msg.reply(&ctx,&format!("Let baba give you a doggo {}", &res));
+    Ok(())
+}
 
-command!(cat(_context, message) {
-    let mut res = match randoms::meow_image() {
+#[command]
+#[aliases("кат", "цат")]
+fn cat(ctx: &mut Context, msg: &Message) -> CommandResult {
+    let res = match randoms::meow_image() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a kitteh {}", &res));
-});
+    let _ = msg.reply(&ctx,&format!("Let baba give you a kitteh {}", &res));
+    Ok(())
+}
 
-command!(duck(_context, message) {
-    let mut res = match randoms::duck_image() {
+#[command]
+#[aliases("патка")]
+fn duck(ctx: &mut Context, msg: &Message) -> CommandResult {
+    let res = match randoms::duck_image() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a lucky ducky {}", &res));
-});
+    let _ = msg.reply(&ctx,&format!("Let baba give you a lucky ducky {}", &res));
+    Ok(())
+}
 
-command!(coub(_context, message) {
-    let mut res = match randoms::coub_random() {
+#[command]
+#[aliases("цоуб")]
+fn coub(ctx: &mut Context, msg: &Message) -> CommandResult {
+    let res = match randoms::coub_random() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a coub {}", &res));
-});
+    let _ = msg.reply(&ctx,&format!("Let baba give you a coub {}", &res));
+    Ok(())
+}
 
-command!(ub(_context, message, args) {
-    let mut urban_result = match urbandict::get_term_top_embed(args.full()) {
+#[command]
+#[aliases("вхатис")]
+fn whatis(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
+    let urban_result = match urbandict::get_term_top_embed(args.message()) {
             Ok(def) => def,
             Err(e) => {
-                let _ = message.reply(&e);
+                let _ = msg.reply(&ctx, &e);
                 return Ok(());
             },
         };
 
     if urban_result.description.len() > 2000 || urban_result.example.len() > 1000 {
-        let _ = message.reply(&urban_result.url);
+        let _ = msg.reply(&ctx, &urban_result.url);
         return Ok(());
     }
 
-    let _ = message.channel_id.send_message(|m| m
+    let _ = msg.channel_id.send_message(&ctx, |m| m
         .embed(|e| {
             let mut e = e
             .title(&urban_result.title)
@@ -129,23 +145,26 @@ command!(ub(_context, message, args) {
             e
             })
         );
-});
+    Ok(())
+}
 
-command!(ub_plain(_context, message, args) {
-    let mut urban_result = match urbandict::get_term_top_embed(args.full()) {
+#[command]
+#[aliases("вхатисплаин")]
+fn whatisplain(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
+    let urban_result = match urbandict::get_term_top_embed(args.message()) {
             Ok(def) => def,
             Err(e) => {
-                let _ = message.reply(&e);
+                let _ = msg.reply(&ctx, &e);
                 return Ok(());
             },
         };
 
     if urban_result.description.len() > 2000 || urban_result.example.len() > 1000 {
-        let _ = message.reply(&urban_result.url);
+        let _ = msg.reply(&ctx,&urban_result.url);
         return Ok(());
     }
 
-    let _ = message.channel_id.send_message(|m| {
+    let _ = msg.channel_id.send_message(&ctx, |m| {
         let mut example: String;
         if !urban_result.is_example_null() {
             example = format!("\nExample:\n{}", &urban_result.example);
@@ -156,33 +175,49 @@ command!(ub_plain(_context, message, args) {
             &urban_result.description,
             &example))
     });
-});
+    Ok(())
+}
 
-command!(panzer(_context, message, args) {
-    let imgbuf = memelord::make_panzer(args.full());
-    let files = vec![(&imgbuf[..], "my_file.jpg")];
-    let _ = message.channel_id.send_files(files, |m| m.content(args.full()));
-});
+#[command]
+fn panzer(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
+    let img_buf = memelord::make_panzer(args.message());
+    let files = vec![(&img_buf[..], "my_file.jpg")];
+    let chan = msg.channel_id;
+    let _ = chan.send_files(&ctx, files, |m| m.content(args.message()));
+    Ok(())
+}
 
-command!(fortune_safe(_context, message) {
-    let mut res = match fortune::get_fortune() {
+#[command]
+fn cardinal(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
+    let img_buf = memelord::make_cardinal(args.message());
+    let files = vec![(&img_buf[..], "cardinal_of_rgb.jpg")];
+    let _ = msg.channel_id.send_files(&ctx, files, |m| m.content(args.message()));
+    Ok(())
+}
+
+#[command]
+fn fortune(ctx: &mut Context, msg: &Message) -> CommandResult {
+    let res = match fortune::get_fortune() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a 4chan {}", &res));
-});
+    let _ = msg.reply(&ctx,&format!("Let baba give you a 4chan {}", &res));
+    Ok(())
+}
 
-command!(nsfwortune(_context, message) {
-    if !message.channel().unwrap().is_nsfw() {
-        let _ = message.reply("Only for NSFW channels");
+#[command]
+fn nsfwortune(ctx: &mut Context, msg: &Message) -> CommandResult {
+    if !msg.channel(&ctx).unwrap().is_nsfw() {
+        let _ = msg.reply(&ctx,"Only for NSFW channels");
         return Ok(());
     }
 
-    let mut res = match fortune::get_nsfw() {
+    let res = match fortune::get_nsfw() {
             Ok(img) => img,
             Err(e) => e,
         };
 
-    let _ = message.reply(&format!("Let baba give you a 4chan nsfw {}", &res));
-});
+    let _ = msg.reply(&ctx, &format!("Let baba give you a 4chan nsfw {}", &res));
+    Ok(())
+}

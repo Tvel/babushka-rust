@@ -1,12 +1,12 @@
 [package]
 name = "babushka"
-version = "0.2.1"
+version = "0.2.2"
 authors = ["Tosil Velkov"]
 license = "MIT"
 edition = "2018"
 
 [dependencies]
-serenity = "0.5"
+serenity = "0.6"
 requests = "0.0.30"
 serde_json = "1.0"
 url = "1.6.0"
