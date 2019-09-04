@@ -166,7 +166,7 @@ fn whatisplain(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
     }
 
     let _ = msg.channel_id.send_message(&ctx, |m| {
-        let mut example: String;
+        let example: String;
         if !urban_result.is_example_null() {
             example = format!("\nExample:\n{}", &urban_result.example);
         } else { example = "".to_string(); }

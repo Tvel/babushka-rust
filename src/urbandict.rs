@@ -1,6 +1,4 @@
-extern crate requests;
 extern crate url;
-use self::requests::ToJson;
 use self::url::form_urlencoded;
 
 pub struct UrbanResult {
@@ -24,44 +22,35 @@ impl UrbanResult {
 pub fn get_term_top_definition(term: &str) -> Result<String, String> {
     let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
         .append_pair("term", term).finish();
-    let response = match requests::get(url) {
-        Ok(res) => res,
-        Err(_) => return Err(String::from("Error getting a definition right now :("))
-    };
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a definition right now :("));
-    }
-    let data = response.json().unwrap();
+    let response: serde_json::Value = reqwest::Client::new()
+        .get(&url)
+        .send()
+        .map_err(|_| "Error getting a definition right now :(")?
+        .json()
+        .map_err(|_| "Error getting a definition right now :(")?;
 
-    Ok(data["list"][0]["definition"].to_string())
+    Ok(response["list"][0]["definition"].to_string())
 }
 
 pub fn get_term_top_embed(term: &str) -> Result<UrbanResult, String> {
     let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
         .append_pair("term", term).finish();
-    let response = match requests::get(url) {
-        Ok(res) => res,
-        Err(_) => return Err(String::from("Error getting a definition right now :("))
-    };
+    let response: serde_json::Value = reqwest::Client::new()
+        .get(&url)
+        .send()
+        .map_err(|_| "Error getting a definition right now :(")?
+        .json()
+        .map_err(|_| "Error getting a definition right now :(")?;
+    let def = &response["list"][0];
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a definition right now :("));
-    }
-
-    let data = response.json().unwrap();
-    let def = &data["list"][0];
-
-    let word = def["word"].to_string();
-    if word.eq("null") {
-        return Err(String::from("No idea"));
-    }
+    let word = String::from(def["word"].as_str().ok_or(String::from("No idea"))?);
 
     let ur = UrbanResult::new(
         word,
-        def["definition"].to_string(),
-        def["example"].to_string(),
-        def["permalink"].to_string());
+        String::from(def["definition"].as_str().unwrap()),
+        String::from(def["example"].as_str().unwrap()),
+        String::from(def["permalink"].as_str().unwrap()));
 
     return Ok(ur);
 }

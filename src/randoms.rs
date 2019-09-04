@@ -1,60 +1,47 @@
-extern crate requests;
-use self::requests::ToJson;
+extern crate serde_json;
+extern crate reqwest;
 
 pub fn woof_image() -> Result<String, String> {
-    let response = match requests::get("https://random.dog/woof") {
-         Ok(res) => res,
-         Err(_) => return Err(String::from("Error getting a doggo right now :("))
-    };
+    let response = reqwest::Client::new()
+        .get("https://random.dog/woof")
+        .send()
+        .map_err(|_| "Error getting a doggo right now :(")?
+        .text()
+        .map_err(|_| "Error getting a doggo right now :(")?;
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a doggo right now :("));
-    }
-
-    let data = response.text().unwrap();
-
-    let url = format!("https://random.dog/{}", data);
+    let url = format!("https://random.dog/{}", response);
     Ok(url)
 }
 
 pub fn meow_image() -> Result<String, String> {
-    let response = match requests::get("http://aws.random.cat/meow") {
-         Ok(res) => res,
-         Err(_) => return Err(String::from("Error getting a kitteh right now :("))
-    };
+    let response: serde_json::Value = reqwest::Client::new()
+        .get("http://aws.random.cat/meow")
+        .send()
+        .map_err(|_| "Error getting a kitteh right now :(")?
+        .json()
+        .map_err(|_| "Error getting a kitteh right now :(")?;
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a kitteh right now :("));
-    }
-    let data = response.json().unwrap();
-
-    Ok(data["file"].to_string())
+    Ok(String::from(response["file"].as_str().unwrap()))
 }
 
 pub fn duck_image() -> Result<String, String> {
-    let response = match requests::get("https://random-d.uk/api/v1/random") {
-        Ok(res) => res,
-        Err(_) => return Err(String::from("Error getting a ducky right now :("))
-    };
+    let response: serde_json::Value = reqwest::Client::new().
+        get("https://random-d.uk/api/v1/random")
+        .send()
+        .map_err(|_| "Error getting a ducky right now :(")?
+        .json()
+        .map_err(|_| "Error getting a ducky right now :(")?;
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a ducky right now :("));
-    }
-    let data = response.json().unwrap();
-
-    Ok(data["url"].to_string())
+    Ok(String::from(response["url"].as_str().unwrap()))
 }
 
 pub fn coub_random() -> Result<String, String> {
-    let response = match requests::get("http://coub.com/api/v2/timeline/explore/random?page=1&per_page=1") {
-        Ok(res) => res,
-        Err(_) => return Err(String::from("Error getting a coub right now :("))
-    };
+    let response: serde_json::Value = reqwest::Client::new()
+        .get("http://coub.com/api/v2/timeline/explore/random?page=1&per_page=1")
+        .send()
+        .map_err(|_| "Error getting a coub right now :(")?
+        .json()
+        .map_err(|_| "Error getting a coub right now :(")?;
 
-    if response.status_code() != requests::StatusCode::Ok {
-        return Err(String::from("Cannot get a coub right now :("));
-    }
-    let data = response.json().unwrap();
-
-    Ok(format!("https://coub.com/embed/{}", data["coubs"][0]["permalink"].to_string()))
+    Ok(format!("https://coub.com/embed/{}", response["coubs"][0]["permalink"].as_str().unwrap()))
 }
