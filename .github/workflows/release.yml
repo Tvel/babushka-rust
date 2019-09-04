@@ -12,5 +12,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v1
+    - name: Prepare
+      run: apt-get install pkg-config libssl-dev
     - name: Build
       run: cargo build --release
