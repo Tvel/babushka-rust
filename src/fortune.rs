@@ -1,9 +1,7 @@
-extern crate serde_json;
-extern crate reqwest;
-
 use rand::thread_rng;
 use rand::seq::IteratorRandom;
 use rand::seq::SliceRandom;
+use crate::web_helper::get_json;
 
 pub fn get_fortune() -> Result<String, String> {
     let board = pick_safe_board()?;
@@ -19,11 +17,7 @@ pub fn get_nsfw() -> Result<String, String> {
 
 fn pick_media(board: String) -> Result<String, String> {
     let url = format!("http://a.4cdn.org/{}/catalog.json", board);
-    let response: serde_json::Value = reqwest::Client::new()
-        .get(&url)
-        .send()
-        .map_err(|_| "Error: Error getting a fortune media right now :(")?
-        .json()
+    let response = get_json(&url)
         .map_err(|_| "Error: Error getting a fortune media right now :(")?;
 
     let mut rng = thread_rng();
@@ -55,11 +49,7 @@ fn pick_media(board: String) -> Result<String, String> {
 
 fn pick_safe_board() -> Result<String, String>
 {
-    let response: serde_json::Value = reqwest::Client::new()
-        .get("http://a.4cdn.org/boards.json")
-        .send()
-        .map_err(|_| "Error getting a fortune board right now :(")?
-        .json()
+    let response = get_json("http://a.4cdn.org/boards.json")
         .map_err(|_| "Error getting a fortune board right now :(")?;
 
     let mut rng = thread_rng();
@@ -77,11 +67,7 @@ fn pick_safe_board() -> Result<String, String>
 
 fn pick_not_safe_board() -> Result<String, String>
 {
-    let response: serde_json::Value = reqwest::Client::new()
-        .get("http://a.4cdn.org/boards.json")
-        .send()
-        .map_err(|_| "Error getting a fortune board right now :(")?
-        .json()
+    let response: serde_json::Value = get_json("http://a.4cdn.org/boards.json")
         .map_err(|_| "Error getting a fortune board right now :(")?;
 
     let mut rng = thread_rng();

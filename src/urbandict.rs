@@ -1,5 +1,6 @@
 extern crate url;
 use self::url::form_urlencoded;
+use crate::web_helper::get_json;
 
 pub struct UrbanResult {
     pub title: String,
@@ -23,11 +24,7 @@ pub fn get_term_top_definition(term: &str) -> Result<String, String> {
     let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
         .append_pair("term", term).finish();
 
-    let response: serde_json::Value = reqwest::Client::new()
-        .get(&url)
-        .send()
-        .map_err(|_| "Error getting a definition right now :(")?
-        .json()
+    let response: serde_json::Value = get_json(&url)
         .map_err(|_| "Error getting a definition right now :(")?;
 
     Ok(response["list"][0]["definition"].to_string())
@@ -36,11 +33,7 @@ pub fn get_term_top_definition(term: &str) -> Result<String, String> {
 pub fn get_term_top_embed(term: &str) -> Result<UrbanResult, String> {
     let url : String = form_urlencoded::Serializer::new(String::from("http://api.urbandictionary.com/v0/define?"))
         .append_pair("term", term).finish();
-    let response: serde_json::Value = reqwest::Client::new()
-        .get(&url)
-        .send()
-        .map_err(|_| "Error getting a definition right now :(")?
-        .json()
+    let response: serde_json::Value = get_json(&url)
         .map_err(|_| "Error getting a definition right now :(")?;
     let def = &response["list"][0];
 

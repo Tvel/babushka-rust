@@ -26,6 +26,7 @@ use std::io::Read;
 mod randoms;
 mod urbandict;
 mod fortune;
+mod web_helper;
 
 struct Handler;
 

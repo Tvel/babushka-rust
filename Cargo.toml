@@ -1,6 +1,6 @@
 [package]
 name = "babushka"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Tosil Velkov"]
 license = "MIT"
 edition = "2018"
