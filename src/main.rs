@@ -118,6 +118,10 @@ fn coub(ctx: &mut Context, msg: &Message) -> CommandResult {
     Ok(())
 }
 
+fn if_urban_is_long(result: &urbandict::UrbanResult) -> bool {
+    result.description.len() > 2000 || result.example.len() > 1000
+}
+
 #[command]
 #[aliases("вхатис")]
 fn whatis(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
@@ -129,7 +133,7 @@ fn whatis(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
             },
         };
 
-    if urban_result.description.len() > 2000 || urban_result.example.len() > 1000 {
+    if if_urban_is_long(&urban_result) {
         let _ = msg.reply(&ctx, &urban_result.url);
         return Ok(());
     }
@@ -161,7 +165,7 @@ fn whatisplain(ctx: &mut Context, msg: &Message, args: Args) -> CommandResult {
             },
         };
 
-    if urban_result.description.len() > 2000 || urban_result.example.len() > 1000 {
+    if if_urban_is_long(&urban_result) {
         let _ = msg.reply(&ctx,&urban_result.url);
         return Ok(());
     }

@@ -40,7 +40,7 @@ fn pick_media(board: String) -> Result<String, String> {
             });
         })
     });
-    if replies_vec.is_empty() { return Err("Error: empty replies".to_string()); }
+    if replies_vec.is_empty() { return Err("Error: empty replies".into()); }
 
     let reply= replies_vec.choose(&mut rng).ok_or("Error: Error getting a fortune media right now :(")?;
 
