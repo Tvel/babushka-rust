@@ -9,8 +9,8 @@ pub fn get_plain(url: &str) -> ::reqwest::Result<String> {
     get_from_web(url)?.text()
 }
 
-fn get_from_web(url: &str) -> ::reqwest::Result<reqwest::Response> {
-    reqwest::Client::new()
+fn get_from_web(url: &str) -> ::reqwest::Result<reqwest::blocking::Response> {
+    reqwest::blocking::Client::new()
         .get(url)
         .send()
 }
