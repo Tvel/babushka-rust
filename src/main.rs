@@ -45,11 +45,9 @@ fn load_settings() -> Value
     serde_json::from_str(&data).unwrap()
 }
 
-group!({
-    name: "general",
-    options: {},
-    commands: [dog, cat, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune]
-});
+#[group]
+#[commands(dog, cat, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune)]
+struct General;
 
 fn start_discord(settings: &Value) {
     let token = settings["token"].as_str().unwrap();
