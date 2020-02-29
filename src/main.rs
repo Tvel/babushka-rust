@@ -18,6 +18,7 @@ use serenity::prelude::*;
 
 use serenity::client::Client;
 use serenity::prelude::EventHandler;
+use serenity::prelude::TypeMapKey;
 use serde_json::{Value};
 use std::fs::File;
 use std::io::Read;
@@ -46,16 +47,28 @@ fn load_settings() -> Value
 }
 
 #[group]
-#[commands(dog, cat, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune)]
+#[commands(dog, cat, cat2, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune)]
 struct General;
+
+struct CatApiKey;
+
+impl TypeMapKey for CatApiKey {
+    type Value = String;
+}
 
 fn start_discord(settings: &Value) {
     let token = settings["token"].as_str().unwrap();
     let prefix = settings["prefix"].as_str().unwrap();
-    
+    let cat_api_key = settings["catapikey"].as_str().unwrap();
     // Login with a bot token from the environment
     let mut client = Client::new(token, Handler)
         .expect("Error creating client");
+
+    {
+        let mut data = client.data.write();
+        data.insert::<CatApiKey>(String::from(cat_api_key));
+    }
+
     client.with_framework(StandardFramework::new()
         .configure(|c| c.prefix(prefix))
         .help(&MY_HELP)
@@ -81,12 +94,35 @@ fn dog(ctx: &mut Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
-#[aliases("кат", "цат")]
-fn cat(ctx: &mut Context, msg: &Message) -> CommandResult {
+#[aliases("кат2", "цат2")]
+fn cat2(ctx: &mut Context, msg: &Message) -> CommandResult {
     let res = match randoms::meow_image() {
             Ok(img) => img,
             Err(e) => e,
         };
+
+    let _ = msg.reply(&ctx,&format!("Let baba give you a kitteh {}", &res));
+    Ok(())
+}
+
+#[command]
+#[aliases("кат", "цат")]
+fn cat(ctx: &mut Context, msg: &Message) -> CommandResult {
+
+    let data = ctx.data.read();
+
+    let apikey = match data.get::<CatApiKey>() {
+        Some(v) => v,
+        None => {
+            let _ = msg.reply(&ctx, "cat api key is invalid");
+            return Ok(());
+        },
+    };
+
+    let res = match randoms::meow_image2(apikey) {
+        Ok(img) => img,
+        Err(e) => e,
+    };
 
     let _ = msg.reply(&ctx,&format!("Let baba give you a kitteh {}", &res));
     Ok(())

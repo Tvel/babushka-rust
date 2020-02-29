@@ -35,7 +35,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "babushka"
-version = "0.3.2"
+version = "0.3.3"
 dependencies = [
  "memelord 0.1.1",
  "rand 0.7.3 (registry+https://github.com/rust-lang/crates.io-index)",
