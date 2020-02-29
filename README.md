@@ -6,6 +6,7 @@ requires a `settings.json` file that looks like this:
 ```
 {
     "token" : "discord-token",
-    "prefix": "!"
+    "prefix": "!",
+    "catapikey" : "key from thecatapi.com"
 }
 ```
