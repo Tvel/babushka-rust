@@ -1,0 +1,28 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag ghcr.io/tvel/babushka:$(git rev-parse --short HEAD)
+
+      - name: Docker Tag
+        run: docker tag ghcr.io/tvel/babushka:$(git rev-parse --short HEAD) ghcr.io/tvel/babushka:latest
+
+      - name: Docker Login
+        run: docker login ghcr.io -u Tvel --password ${{ secrets.CR_PAT }}
+
+      - name: Push the Docker image
+        run: docker push ghcr.io/tvel/babushka:$(git rev-parse --short HEAD)
+
+      - name: Push the Docker image Latest
+        run: docker push ghcr.io/tvel/babushka:latest

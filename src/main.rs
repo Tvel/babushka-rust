@@ -22,7 +22,6 @@ use serenity::prelude::TypeMapKey;
 use serde_json::{Value};
 use std::fs::File;
 use std::io::Read;
-//use std::env;
 
 mod randoms;
 mod urbandict;
@@ -34,16 +33,7 @@ struct Handler;
 impl EventHandler for Handler {}
 
 fn main() {
-    let v = load_settings();
-    start_discord(&v);
-}
-
-fn load_settings() -> Value
-{
-    let mut file = File::open("settings.json").unwrap();
-    let mut data = String::new();
-    file.read_to_string(&mut data).unwrap();
-    serde_json::from_str(&data).unwrap()
+    start_discord();
 }
 
 #[group]
@@ -56,10 +46,11 @@ impl TypeMapKey for CatApiKey {
     type Value = String;
 }
 
-fn start_discord(settings: &Value) {
-    let token = settings["token"].as_str().unwrap();
-    let prefix = settings["prefix"].as_str().unwrap();
-    let cat_api_key = settings["catapikey"].as_str().unwrap();
+fn start_discord() {
+    let token = env::var("DISCORD_TOKEN").unwrap();
+    let prefix = env::var("DISCORD_PREFIX").unwrap();
+    let cat_api_key = env::var("CATAPIKEY").unwrap();
+
     // Login with a bot token from the environment
     let mut client = Client::new(token, Handler)
         .expect("Error creating client");
@@ -70,7 +61,7 @@ fn start_discord(settings: &Value) {
     }
 
     client.with_framework(StandardFramework::new()
-        .configure(|c| c.prefix(prefix))
+        .configure(|c| c.prefix(prefix.as_str()))
         .help(&MY_HELP)
         .group(&GENERAL_GROUP)
     );

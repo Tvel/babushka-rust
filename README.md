@@ -2,11 +2,11 @@
 discord bot with spam we use
 
 
-requires a `settings.json` file that looks like this:
+requires env variables:
 ```
-{
-    "token" : "discord-token",
-    "prefix": "!",
-    "catapikey" : "key from thecatapi.com"
-}
+DISCORD_PREFIX=!
+DISCORD_TOKEN=discord-token
+CATAPIKEY=key from thecatapi.com
 ```
+
+requires images form https://github.com/Tvel/memelord-rs/tree/master/images in images folder
