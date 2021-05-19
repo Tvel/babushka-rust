@@ -1,16 +1,17 @@
 extern crate serde_json;
 extern crate reqwest;
 
-pub fn get_json(url: &str) -> ::reqwest::Result<serde_json::Value> {
-    get_from_web(url)?.json()
+pub async fn get_json(url: &str) -> ::reqwest::Result<serde_json::Value> {
+    get_from_web(url).await?.json().await
 }
 
-pub fn get_plain(url: &str) -> ::reqwest::Result<String> {
-    get_from_web(url)?.text()
+pub async fn get_plain(url: &str) -> ::reqwest::Result<String> {
+    get_from_web(url).await?.text().await
 }
 
-fn get_from_web(url: &str) -> ::reqwest::Result<reqwest::blocking::Response> {
-    reqwest::blocking::Client::new()
+async fn get_from_web(url: &str) -> ::reqwest::Result<reqwest::Response> {
+    reqwest::Client::new()
         .get(url)
         .send()
+        .await
 }

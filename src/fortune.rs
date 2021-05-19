@@ -3,21 +3,21 @@ use rand::seq::IteratorRandom;
 use rand::seq::SliceRandom;
 use crate::web_helper::get_json;
 
-pub fn get_fortune() -> Result<String, String> {
-    let board = pick_safe_board()?;
-    let content = pick_media(board)?;
+pub async fn get_fortune() -> Result<String, String> {
+    let board = pick_safe_board().await?;
+    let content = pick_media(board).await?;
     return Ok(content);
 }
 
-pub fn get_nsfw() -> Result<String, String> {
-    let board = pick_not_safe_board()?;
-    let content = pick_media(board)?;
+pub async fn get_nsfw() -> Result<String, String> {
+    let board = pick_not_safe_board().await?;
+    let content = pick_media(board).await?;
     return Ok(content);
 }
 
-fn pick_media(board: String) -> Result<String, String> {
+async fn pick_media(board: String) -> Result<String, String> {
     let url = format!("http://a.4cdn.org/{}/catalog.json", board);
-    let response = get_json(&url)
+    let response = get_json(&url).await
         .map_err(|_| "Error: Error getting a fortune media right now :(")?;
 
     let mut rng = thread_rng();
@@ -47,9 +47,9 @@ fn pick_media(board: String) -> Result<String, String> {
     return Ok(format!("http://i.4cdn.org/{}/{}{}", board, reply["tim"].as_i64().unwrap(), reply["ext"].as_str().unwrap()));
 }
 
-fn pick_safe_board() -> Result<String, String>
+async fn pick_safe_board() -> Result<String, String>
 {
-    let response = get_json("http://a.4cdn.org/boards.json")
+    let response = get_json("http://a.4cdn.org/boards.json").await
         .map_err(|_| "Error getting a fortune board right now :(")?;
 
     let mut rng = thread_rng();
@@ -65,9 +65,9 @@ fn pick_safe_board() -> Result<String, String>
     Ok(chosen)
 }
 
-fn pick_not_safe_board() -> Result<String, String>
+async fn pick_not_safe_board() -> Result<String, String>
 {
-    let response: serde_json::Value = get_json("http://a.4cdn.org/boards.json")
+    let response: serde_json::Value = get_json("http://a.4cdn.org/boards.json").await
         .map_err(|_| "Error getting a fortune board right now :(")?;
 
     let mut rng = thread_rng();

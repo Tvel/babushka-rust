@@ -6,9 +6,13 @@ license = "MIT"
 edition = "2018"
 
 [dependencies]
-serenity = "0.8"
-reqwest = { version = "0.10", features = ["blocking", "json"] }
+serenity = "0.10"
+reqwest = { version = "0.11.3", features = ["blocking", "json"] }
 serde_json = "1.0"
-rand = "0.7"
-url = "2.1.0"
+rand = "0.8"
+url = "2.2.2"
 memelord = { git = "https://github.com/Tvel/memelord-rs" }
+
+[dependencies.tokio]
+version = "1.0"
+features = ["macros", "rt-multi-thread"]
