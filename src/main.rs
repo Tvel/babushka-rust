@@ -252,7 +252,7 @@ async fn nsfwortune(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
-#[aliases("дад")]
+#[aliases("дад", "father", "тате", "daddy")]
 async fn dad(ctx: &Context, msg: &Message) -> CommandResult {
     let res = match randoms::dad().await {
         Ok(joke) => joke,
