@@ -1,9 +1,9 @@
-FROM rust:1.52.1-buster as builder
+FROM rust:1.61.0-bullseye as builder
 WORKDIR /usr/src/myapp
 COPY . .
 RUN cargo build --release
 
-FROM debian:buster-slim
+FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y ca-certificates openssl && rm -rf /var/lib/apt/lists/
 #RUN apt-get update && apt-get install -y extra-runtime-dependencies && rm -rf /var/lib/apt/lists/
 RUN mkdir /app
