@@ -15,3 +15,13 @@ async fn get_from_web(url: &str) -> ::reqwest::Result<reqwest::Response> {
         .send()
         .await
 }
+
+pub async fn get_plain2(url: &str) -> ::reqwest::Result<String> {
+    reqwest::Client::new()
+        .get(url)
+        .header("Accept", "text/plain")
+        .send()
+        .await?
+        .text()
+        .await
+}

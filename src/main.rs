@@ -10,7 +10,7 @@ use serenity::{
     },
     model::{channel::{Channel, Message}, id::UserId},
 };
-use serenity::prelude::TypeMapKey;
+use serenity::prelude::{GatewayIntents, TypeMapKey};
 use tokio;
 use serenity::async_trait;
 use serenity::client::{Client, Context, EventHandler};
@@ -31,7 +31,7 @@ async fn main() {
 }
 
 #[group]
-#[commands(dog, cat, cat2, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune)]
+#[commands(dog, cat, cat2, duck, coub, whatis, whatisplain, panzer, cardinal, fortune, nsfwortune, dad)]
 struct General;
 
 struct CatApiKey;
@@ -45,12 +45,16 @@ async fn start_discord() {
     let prefix = env::var("DISCORD_PREFIX").unwrap();
     let cat_api_key = env::var("CATAPIKEY").unwrap();
 
+    let intents = GatewayIntents::GUILD_MESSAGES
+        | GatewayIntents::DIRECT_MESSAGES
+        | GatewayIntents::MESSAGE_CONTENT;
+
     let framework = StandardFramework::new()
         .configure(|c| c.prefix(prefix.as_str()))
         .help(&MY_HELP)
         .group(&GENERAL_GROUP);
 
-    let mut client = Client::builder(&token)
+    let mut client = Client::builder(&token, intents)
         .event_handler(Handler)
         .framework(framework)
         .await
@@ -114,7 +118,7 @@ async fn cat(ctx: &Context, msg: &Message) -> CommandResult {
 }
 
 #[command]
-#[aliases("патка", "дуцк")]
+#[aliases("патка", "дуцк", "patka")]
 async fn duck(ctx: &Context, msg: &Message) -> CommandResult {
     let res = match randoms::duck_image().await {
             Ok(img) => img,
@@ -247,6 +251,18 @@ async fn nsfwortune(ctx: &Context, msg: &Message) -> CommandResult {
     Ok(())
 }
 
+#[command]
+#[aliases("дад")]
+async fn dad(ctx: &Context, msg: &Message) -> CommandResult {
+    let res = match randoms::dad().await {
+        Ok(joke) => joke,
+        Err(e) => e,
+    };
+
+    msg.reply(&ctx.http, &res).await?;
+
+    Ok(())
+}
 
 #[help]
 #[individual_command_tip =

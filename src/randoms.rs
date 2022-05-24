@@ -4,6 +4,7 @@ extern crate reqwest;
 
 use crate::web_helper::get_json;
 use crate::web_helper::get_plain;
+use crate::web_helper::get_plain2;
 
 pub async fn woof_image() -> Result<String, String> {
     let response = get_plain("https://random.dog/woof").await
@@ -46,4 +47,11 @@ pub async fn meow_image2(key: &str) -> Result<String, String> {
         .map_err(|_| "Error getting a kitteh right now :(")?;
 
     Ok(String::from(response.as_array().unwrap().first().unwrap()["url"].as_str().unwrap()))
+}
+
+pub async fn dad() -> Result<String, String> {
+    let response = get_plain2("https://icanhazdadjoke.com/").await
+        .map_err(|_| "Error getting a doggo right now :(")?;
+
+    Ok(response)
 }
